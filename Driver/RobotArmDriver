@@ -1,0 +1,82 @@
+
+Title  : RobotArmDriver.py
+Author : Shane Shankar
+Date   : 4/21/24
+Purpose: The driver for our ECE 1000 project, a robot arm.
+         uses the s51_servo class to move servos based on joystick inputs
+         could use more polish, but I'm still a genius.
+'''
+
+from machine import ADC,Pin,PWM
+from time import sleep
+from s51servo import s51_servo # The s51_servo class
+
+import utime
+
+xaxis = ADC(0) # G26
+yaxis = ADC(1) # GP27
+button = Pin(28,Pin.IN, Pin.PULL_UP) # GP28
+clawBtn = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN) # GP14
+sx = s51_servo(0) #The horizontal movement
+sy1 = s51_servo(1) # The vertical joint at the base
+sy2 = s51_servo(2) # The vertical joint at before the claw
+claw = s51_servo(3) # The claw
+mode = False # a boolean that decides which vertical joint moves
+lastTime = 0 # time between buttonPressed calls
+
+def moveservo(axis : ADC, servo : s51_servo): # a function that moves the servos at different speeds based on how far the joystick is.
+    pos = round(((axis.read_u16() + 1)/128))
+    if pos > 320 and pos < 448: 
+        servo.move((-20))
+
+    if pos >= 448:
+        servo.move(-50)
+
+    if pos > 64 and pos < 192:
+        servo.move(20)
+           
+    if pos <= 64:
+        servo.move(50)
+    
+
+def toggle(state : bool): # toggles a boolean used for moving one of the two vertical joints
+    if state == False:
+        return True
+        
+    if state == True:
+        return False
+    
+    
+def buttonPressed(pin): # a function that makes sure there has been some time frame between the toggle
+    global lastTime, mode
+    newTime = utime.ticks_ms()
+    if (newTime - lastTime) > 500:
+        mode = toggle(mode)
+        lastTime = newTime
+    
+ 
+        
+   
+button.irq(trigger = machine.Pin.IRQ_FALLING, handler = buttonPressed) # Making the buttonPressed function get called on falling edges
+
+
+
+while True:
+    # horizontal movement 
+    moveservo(xaxis,sx)
+    # checking which vertical joint to move
+    if mode == False: 
+        moveservo(yaxis,sy1)
+        
+    if mode == True:
+        moveservo(yaxis,sy2)
+        
+    # closing claw  
+    if clawBtn.value() == 0:
+        claw.__pwm.duty_u16(5000) # uses the pwm.duty_u16 because the move function doesn't work well in this case
+        
+    else:
+        claw.__pwm.duty_u16(2000) # same as the previous comment
+    
+
+    sleep(0.01)

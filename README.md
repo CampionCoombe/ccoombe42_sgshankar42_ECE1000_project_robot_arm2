@@ -1,14 +1,14 @@
 # ccoombe42_sgshankar42_ECE1000_project_robot_arm2
 This GitHub contains all relevant files used for our ECE 1000 robot arm project.
 
-Project Capabilities
-This robot arm is moveable on three joints
-Toggle on joint movement
-A working? claw
-Who are we?
-Campion Coombe Freshman Electrical Engineering Major - 3d printing
-Shane Shankar Freshman Computer Engineering Major - Arm code
-Links to resources used for project:
+## Project Capabilities
+- This robot arm is moveable on three joints
+- Toggle on joint movement
+- A working? claw
+## Who are we?
+- Campion Coombe Freshman Electrical Engineering Major - 3d printing
+- Shane Shankar Freshman Computer Engineering Major - Arm code
+## Links to resources used for project:
 Guide on Joystick: https://www.youtube.com/watch?v=SJr-HoCwlWg
 
 Robot Arm: https://www.thingiverse.com/thing:34829
